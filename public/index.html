@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Barang</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Daftar Barang</h1>
+
+    <form id="formBarang">
+        <input type="text" id="nama" placeholder="Nama Barang" required>
+        <input type="number" id="harga" placeholder="Harga" required>
+        <input type="number" id="stok" placeholder="Stok" required>
+        <button type="submit">Tambah Barang</button>
+    </form>
+
+    <h2>Barang Tersedia</h2>
+    <table id="barangTable">
+        <thead>
+            <tr>
+                <th>Nama</th>
+                <th>Harga</th>
+                <th>Stok</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
