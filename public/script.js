@@ -3,6 +3,8 @@
 const formBarang = document.getElementById('formBarang');
 const barangTable = document.getElementById('barangTable').getElementsByTagName('tbody')[0];
 
+let updateId = null; // Variable untuk menyimpan ID barang yang sedang diupdate
+
 // Fungsi untuk mengambil semua barang
 const fetchBarang = async() => {
     const response = await fetch('/barang');
@@ -20,14 +22,22 @@ const renderBarang = (barang) => {
             <td>${item.harga}</td>
             <td>${item.stok}</td>
             <td>
-                <button onclick="updateBarang('${item._id}')">Update</button>
+                <button onclick="fillUpdateForm('${item._id}', '${item.nama}', '${item.harga}', '${item.stok}')">Update</button>
                 <button onclick="deleteBarang('${item._id}')">Delete</button>
             </td>
         `;
     });
 };
 
-// Fungsi untuk menambah barang
+// Fungsi untuk mengisi form dengan data barang yang akan diupdate
+const fillUpdateForm = (id, nama, harga, stok) => {
+    document.getElementById('nama').value = nama;
+    document.getElementById('harga').value = harga;
+    document.getElementById('stok').value = stok;
+    updateId = id; // Set updateId dengan ID barang yang dipilih
+};
+
+// Fungsi untuk menambah atau mengupdate barang
 formBarang.addEventListener('submit', async(event) => {
     event.preventDefault();
 
@@ -35,39 +45,30 @@ formBarang.addEventListener('submit', async(event) => {
     const harga = document.getElementById('harga').value;
     const stok = document.getElementById('stok').value;
 
-    const response = await fetch('/barang', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ nama, harga, stok })
-    });
-
-    const newBarang = await response.json();
-    fetchBarang(); // Reload barang setelah data ditambahkan
-
-    // Clear form
-    formBarang.reset();
-});
-
-// Fungsi untuk mengupdate barang
-const updateBarang = async(id) => {
-    const nama = prompt("Nama Barang:");
-    const harga = prompt("Harga Barang:");
-    const stok = prompt("Stok Barang:");
-
-    if (nama && harga && stok) {
-        await fetch(`/barang/${id}`, {
+    if (updateId) {
+        // Update barang jika updateId tidak null
+        await fetch(`/barang/${updateId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ nama, harga, stok })
         });
-
-        fetchBarang(); // Reload barang setelah update
+        updateId = null; // Reset updateId setelah update selesai
+    } else {
+        // Tambah barang baru jika updateId null
+        await fetch('/barang', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ nama, harga, stok })
+        });
     }
-};
+
+    fetchBarang(); // Reload barang setelah data diperbarui atau ditambahkan
+    formBarang.reset(); // Clear form
+});
 
 // Fungsi untuk menghapus barang
 const deleteBarang = async(id) => {
